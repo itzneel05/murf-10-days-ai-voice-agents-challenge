@@ -8,6 +8,17 @@ Additionally, my voice agent is powered by the fastest TTS API—**Murf Falcon**
 
 I am proud to be part of the **Murf AI Voice Agent Challenge**, where developers explore cutting-edge voice agent technologies to build innovative applications.
 
+
+# Day 2 - Coffee Shop Barista Voice Agent
+
+For Day 2, I transformed my starter agent into a friendly coffee shop barista that can take voice orders step-by-step.
+
+- Asks for the customer’s name if not known  
+- Takes coffee order details: drink type, size, milk preference, and extras  
+- Confirms the full order with the customer  
+- Saves the order in a JSON file for easy tracking  
+- Updated Murf TTS voice and instructions to fit the barista persona  
+
 ---
 
 Excited for the upcoming days as I continue building and refining more intelligent and responsive voice agents with Murf AI's advanced ecosystem!
