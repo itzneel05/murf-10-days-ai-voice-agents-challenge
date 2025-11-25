@@ -52,7 +52,7 @@ export function ChatInput({
     }
   };
 
-  const isDisabled = isSending || !isAgentAvailable || message.trim().length === 0;
+  const isDisabled = isSending || message.trim().length === 0;
 
   useEffect(() => {
     if (chatOpen && isAgentAvailable) return;
