@@ -21,4 +21,25 @@ For Day 2, I transformed my starter agent into a friendly coffee shop barista th
 
 ---
 
+# Day 3 - Health & Wellness Voice Companion
+
+Built a daily health & wellness voice companion that:  
+- Checks in daily with the user via voice  
+- Saves key data in a JSON file  
+- Uses past data to guide next conversations  
+
+---
+
+# Day 4 - Teach-the-Tutor: Active Recall Coach
+
+For Day 4, I built an active recall coach voice agent that helps users learn by teaching back concepts.
+
+- The agent supports three modes:  
+  - Learn: explains a concept (voice: Matthew)  
+  - Quiz: asks questions (voice: Alicia)  
+  - Teach Back: asks user to explain and gives feedback (voice: Ken)  
+
+- Uses a small JSON content file with concepts to guide learning  
+- Users can switch modes anytime by voice  
+
 Excited for the upcoming days as I continue building and refining more intelligent and responsive voice agents with Murf AI's advanced ecosystem!
