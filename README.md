@@ -42,4 +42,17 @@ For Day 4, I built an active recall coach voice agent that helps users learn by 
 - Uses a small JSON content file with concepts to guide learning  
 - Users can switch modes anytime by voice  
 
+---
+
+# Day 5 - Simple FAQ SDR + Lead Capture Voice Agent
+
+For Day 5, I built a Sales Development Representative (SDR) voice agent for an Yellow AI. This agent:  
+
+- Greets visitors warmly and asks about their needs  
+- Answers common company/product/pricing questions using a prepared FAQ JSON  
+- Collects lead details naturally during the conversation (name, company, email, role, use case, team size, timeline)  
+- Stores lead info and generates a summary at the end of the call in a JSON file  
+
+Powered by the fastest Text-to-Speech API — **Murf Falcon** — providing smooth, natural voice interactions.
+
 Excited for the upcoming days as I continue building and refining more intelligent and responsive voice agents with Murf AI's advanced ecosystem!
