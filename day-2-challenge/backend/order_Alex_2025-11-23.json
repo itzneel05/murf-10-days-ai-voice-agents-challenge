@@ -1,0 +1,10 @@
+{
+  "name": "Alex",
+  "drinkType": "espresso",
+  "size": "small",
+  "milk": "none",
+  "extras": [
+    "extra shots"
+  ],
+  "timestamp": "2025-11-23T18:32:40.137347"
+}
