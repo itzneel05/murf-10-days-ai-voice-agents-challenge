@@ -1,9 +1,9 @@
 import logging
 import os
-import json
-from datetime import datetime
+import sqlite3
 from dataclasses import dataclass
 from typing import Optional
+
 from dotenv import load_dotenv
 from livekit.agents import (
     Agent,
@@ -12,174 +12,162 @@ from livekit.agents import (
     JobProcess,
     MetricsCollectedEvent,
     RoomInputOptions,
+    RunContext,
     WorkerOptions,
     cli,
+    function_tool,
     metrics,
     tokenize,
-    function_tool,
-    RunContext,
 )
-from livekit.plugins import murf, silero, google, deepgram, noise_cancellation
+from livekit.plugins import deepgram, google, murf, noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 logger = logging.getLogger("agent")
 load_dotenv(".env.local")
 
-FAQ_PATH = "../shared-data/yellowai_faq.json"
-LEADS_PATH = "../shared-data/leads.json"
+DB_PATH = os.path.join(os.path.dirname(__file__), "fraud_cases.db")
 
-def _load_faq() -> list[dict]:
+def _db_connect() -> sqlite3.Connection:
+    return sqlite3.connect(DB_PATH)
+
+def _load_case(username: str) -> Optional[dict]:
+    conn = _db_connect()
     try:
-        with open(FAQ_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return []
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT id, customer_name, security_id, masked_card, amount, merchant, location, timestamp, security_question, security_answer, status, outcome_note FROM fraud_cases WHERE username = ? ORDER BY id DESC LIMIT 1",
+            (username,),
+        )
+        row = cur.fetchone()
+        if not row:
+            return None
+        return {
+            "id": row[0],
+            "customer_name": row[1],
+            "security_id": row[2],
+            "masked_card": row[3],
+            "amount": row[4],
+            "merchant": row[5],
+            "location": row[6],
+            "timestamp": row[7],
+            "security_question": row[8],
+            "security_answer": row[9],
+            "status": row[10],
+            "outcome_note": row[11],
+        }
+    finally:
+        conn.close()
 
-def _search_faq(query: str) -> Optional[dict]:
-    q = query.lower().strip()
-    best = None
-    best_score = 0
-    for entry in _load_faq():
-        score = 0
-        question = str(entry.get("question", "")).lower()
-        answer = str(entry.get("answer", "")).lower()
-        tags = [str(t).lower() for t in entry.get("tags", [])]
-        for token in q.split():
-            if token in question:
-                score += 2
-            if token in answer:
-                score += 1
-            if token in tags:
-                score += 3
-        if score > best_score:
-            best = entry
-            best_score = score
-    return best
-
-def _load_leads() -> list:
+def _update_status(case_id: int, status: str, note: str) -> None:
+    conn = _db_connect()
     try:
-        if os.path.exists(LEADS_PATH):
-            with open(LEADS_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
-    except Exception:
-        return []
-    return []
-
-def _upsert_lead(record: dict) -> None:
-    leads = _load_leads()
-    existing_index = None
-    for i, r in enumerate(leads):
-        if r.get("id") == record.get("id"):
-            existing_index = i
-            break
-    if existing_index is None:
-        leads.append(record)
-    else:
-        leads[existing_index] = record
-    try:
-        with open(LEADS_PATH, "w", encoding="utf-8") as f:
-            json.dump(leads, f, indent=2)
-    except Exception as e:
-        logger.error(f"Failed to write leads: {e}")
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE fraud_cases SET status = ?, outcome_note = ? WHERE id = ?",
+            (status, note, case_id),
+        )
+        conn.commit()
+        logger.info(f"Fraud case {case_id} updated: {status} - {note}")
+    finally:
+        conn.close()
 
 @dataclass
-class LeadState:
-    id: str = ""
-    name: Optional[str] = None
-    company: Optional[str] = None
-    email: Optional[str] = None
-    role: Optional[str] = None
-    use_case: Optional[str] = None
-    team_size: Optional[str] = None
-    timeline: Optional[str] = None
-
-    def ensure_id(self):
-        if not self.id:
-            self.id = datetime.now().strftime("%Y%m%d%H%M%S%f")
-
-    def to_record(self, status: str = "in_progress") -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "company": self.company,
-            "email": self.email,
-            "role": self.role,
-            "use_case": self.use_case,
-            "team_size": self.team_size,
-            "timeline": self.timeline,
-            "status": status,
-            "updated_at": datetime.now().isoformat(),
-        }
+class FraudCaseState:
+    username: Optional[str] = None
+    case: Optional[dict] = None
+    verified: bool = False
+    final_status: Optional[str] = None
 
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
             instructions=(
-                "You are Yellow AI's friendly Sales Development Representative. "
-                "Greet visitors warmly, ask what brought them here and what they're working on, "
-                "and keep the conversation focused on understanding their needs. "
-                "When asked about product, company, channels, integrations, or pricing, call the `answer_faq` tool with the user's question and answer only from the provided FAQ. "
-                "If information is not in the FAQ, say you don't have that detail and offer to connect sales. "
-                "Collect lead details naturally: name, company, email, role, use case, team size, and timeline. "
-                "Whenever the user provides a field, call `record_lead_field` with the field and value. "
-                "When the user indicates the conversation is done (phrases like 'that's all', 'I'm done', 'thanks'), call `complete_lead` to summarize and finalize. "
-                "Be concise, helpful, and refuse harmful or inappropriate requests. Do not claim to know personal information about the user."
+                "You are a calm, professional fraud detection representative named Alex for Easy Bank. "
+                "At the start of the call, clearly introduce Easy Bank and yourself, explain you are contacting the user about a suspicious card transaction, and ask for their username to locate the case. "
+                "After the user provides a username, call the `load_fraud_case` tool with it. If no case is found, politely explain and ask for a different username or end the call. "
+                "Use only non-sensitive verification. Call `get_security_question` to retrieve the security question from the loaded case and ask it verbatim. Do not ask for full card numbers, PINs, passwords, or credentials. When the user answers, call `verify_answer` with the user's answer. If verification fails, apologize, say you cannot proceed, call `finalize_verification_failed`, and end the call. "
+                "If verification passes, use only database values to describe the transaction by calling `read_transaction_details`: include merchant, location, timestamp, amount, and only the masked card's last four digits. Then ask if they made this transaction (yes or no). Based on the answer, call `finalize_case` with true for yes or false for no. "
+                "When finalizing, the status must be one of confirmed_safe or confirmed_fraud, with a concise outcome note. End the call by confirming the action taken. "
+                "Be concise, reassuring, and refuse harmful or inappropriate requests. Do not claim to know personal information about the user beyond what is in the case data."
             )
         )
 
     @function_tool
-    async def answer_faq(self, context: RunContext[LeadState], query: str) -> str:
-        context.userdata.ensure_id()
-        match = _search_faq(query)
-        if match:
-            return str(match.get("answer", ""))
-        return "I don't have that detail in our FAQ. I can connect you to our sales team for specifics."
+    async def get_security_question(self, context: RunContext[FraudCaseState]) -> str:
+        if not context.userdata.case:
+            return "No case loaded."
+        q = str(context.userdata.case.get("security_question", "")).strip()
+        if not q:
+            return "No security question available."
+        return q
 
     @function_tool
-    async def record_lead_field(self, context: RunContext[LeadState], field: str, value: str) -> str:
-        context.userdata.ensure_id()
-        f = field.strip().lower()
-        v = value.strip()
-        if f == "name":
-            context.userdata.name = v
-        elif f == "company":
-            context.userdata.company = v
-        elif f == "email":
-            context.userdata.email = v
-        elif f == "role":
-            context.userdata.role = v
-        elif f == "use case" or f == "use_case":
-            context.userdata.use_case = v
-        elif f == "team size" or f == "team_size":
-            context.userdata.team_size = v
-        elif f == "timeline":
-            context.userdata.timeline = v
-        rec = context.userdata.to_record(status="in_progress")
-        _upsert_lead(rec)
-        return "Got it."
+    async def load_fraud_case(self, context: RunContext[FraudCaseState], username: str) -> str:
+        context.userdata.username = username.strip()
+        case = _load_case(context.userdata.username)
+        context.userdata.case = case
+        if not case:
+            return "No fraud case found for that username."
+        return "Case loaded. Call `get_security_question` and ask it."
 
     @function_tool
-    async def complete_lead(self, context: RunContext[LeadState]) -> str:
-        context.userdata.ensure_id()
-        rec = context.userdata.to_record(status="completed")
-        _upsert_lead(rec)
-        name = context.userdata.name or "a prospective customer"
-        company = context.userdata.company or "their company"
-        use_case = context.userdata.use_case or "a potential use case"
-        timeline = context.userdata.timeline or "an upcoming timeline"
-        return f"Summary: {name} from {company} is interested in {use_case}. Timeline: {timeline}."
+    async def verify_answer(self, context: RunContext[FraudCaseState], answer: str) -> str:
+        if not context.userdata.case:
+            return "No case loaded."
+        provided = (answer or "").strip().lower()
+        expected = str(context.userdata.case.get("security_answer", "")).strip().lower()
+        ok = provided == expected and expected != ""
+        context.userdata.verified = ok
+        if ok:
+            return "Verification passed. Read transaction details and ask if it was made."
+        return "Verification failed."
+
+    @function_tool
+    async def read_transaction_details(self, context: RunContext[FraudCaseState]) -> str:
+        if not context.userdata.case:
+            return "No case loaded."
+        c = context.userdata.case
+        digits = "".join(d for d in str(c.get("masked_card", "")) if d.isdigit())
+        last4 = digits[-4:] if digits else ""
+        return f"Suspicious transaction: {c['merchant']} at {c['location']} around {c['timestamp']} for ${c['amount']:.2f} on card ending {last4}."
+
+    @function_tool
+    async def finalize_case(self, context: RunContext[FraudCaseState], is_legit: bool) -> str:
+        if not context.userdata.case:
+            return "No case loaded."
+        case_id = int(context.userdata.case["id"])
+        if is_legit:
+            status = "confirmed_safe"
+            note = "Customer confirmed transaction as legitimate."
+        else:
+            status = "confirmed_fraud"
+            note = "Customer denied transaction; card blocked and dispute initiated."
+        _update_status(case_id, status, note)
+        context.userdata.final_status = status
+        return f"Status updated: {status}."
+
+    @function_tool
+    async def finalize_verification_failed(self, context: RunContext[FraudCaseState]) -> str:
+        if not context.userdata.case:
+            return "No case loaded."
+        case_id = int(context.userdata.case["id"])
+        status = "verification_failed"
+        note = "Verification failed; unable to proceed."
+        _update_status(case_id, status, note)
+        context.userdata.final_status = status
+        return f"Status updated: {status}."
 
 def prewarm(proc: JobProcess):
     proc.userdata["vad"] = silero.VAD.load()
 
 async def entrypoint(ctx: JobContext):
     ctx.log_context_fields = {"room": ctx.room.name}
-    lead_state = LeadState()
-    session = AgentSession[LeadState](
+    state = FraudCaseState()
+    session = AgentSession[FraudCaseState](
         stt=deepgram.STT(model="nova-3"),
         llm=google.LLM(model="gemini-2.5-flash"),
         tts=murf.TTS(
-            voice="en-US-matthew",
+            voice="en-IN-Isha",
             style="Conversation",
             tokenizer=tokenize.basic.SentenceTokenizer(min_sentence_len=2),
             text_pacing=True,
@@ -187,7 +175,7 @@ async def entrypoint(ctx: JobContext):
         turn_detection=MultilingualModel(),
         vad=ctx.proc.userdata["vad"],
         preemptive_generation=True,
-        userdata=lead_state,
+        userdata=state,
     )
     usage_collector = metrics.UsageCollector()
     @session.on("metrics_collected")
