@@ -1,0 +1,48 @@
+{
+  "customer_name": "Alex",
+  "customer_address": "Surat",
+  "items": [
+    {
+      "name": "Masala Chips",
+      "quantity": 1,
+      "unit_price": 30.0,
+      "line_total": 30.0,
+      "notes": "",
+      "category": "Snacks"
+    },
+    {
+      "name": "Parle-G Biscuits",
+      "quantity": 1,
+      "unit_price": 10.0,
+      "line_total": 10.0,
+      "notes": "",
+      "category": "Snacks"
+    },
+    {
+      "name": "Veg Biryani",
+      "quantity": 1,
+      "unit_price": 150.0,
+      "line_total": 150.0,
+      "notes": "",
+      "category": "Prepared Food"
+    },
+    {
+      "name": "Atta (Wheat Flour)",
+      "quantity": 1,
+      "unit_price": 120.0,
+      "line_total": 120.0,
+      "notes": null,
+      "category": "Groceries"
+    },
+    {
+      "name": "Ghee",
+      "quantity": 1,
+      "unit_price": 420.0,
+      "line_total": 420.0,
+      "notes": null,
+      "category": "Groceries"
+    }
+  ],
+  "total": 730.0,
+  "currency": "INR"
+}
