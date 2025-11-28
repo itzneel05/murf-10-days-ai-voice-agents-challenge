@@ -53,6 +53,32 @@ For Day 5, I built a Sales Development Representative (SDR) voice agent for an Y
 - Collects lead details naturally during the conversation (name, company, email, role, use case, team size, timeline)  
 - Stores lead info and generates a summary at the end of the call in a JSON file  
 
+---
+
+# Day 6 - Fraud Alert Voice Agent
+
+Built a fraud detection voice agent for a fictional bank that:
+
+- Loads fake fraud cases from a JSON database at call start  
+- Verifies user identity with a simple security question  
+- Reads out suspicious transaction details (merchant, amount, masked card, time, location)  
+- Asks if the user made the transaction  
+- Updates database status: `confirmed_safe`, `confirmed_fraud`, or `verification_failed`  
+- Ends call with action confirmation (card blocked/new card issued/dispute filed)  
+
+---
+
+# Day 7 - Smart Food & Grocery Ordering Agent
+
+Built an intelligent grocery ordering voice agent that:
+
+- Uses a 20+ item catalog (groceries, snacks, prepared foods)  
+- Adds items to cart with quantities and confirms changes  
+- Handles smart requests like "ingredients for peanut butter sandwich" (adds bread + PB automatically)  
+- Supports cart operations: add, remove, update, list contents  
+- Saves complete order (items, quantities, total, timestamp) to JSON when done  
+
+
 Powered by the fastest Text-to-Speech API — **Murf Falcon** — providing smooth, natural voice interactions.
 
 Excited for the upcoming days as I continue building and refining more intelligent and responsive voice agents with Murf AI's advanced ecosystem!
