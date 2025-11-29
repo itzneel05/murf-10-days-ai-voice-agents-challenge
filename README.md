@@ -78,6 +78,18 @@ Built an intelligent grocery ordering voice agent that:
 - Supports cart operations: add, remove, update, list contents  
 - Saves complete order (items, quantities, total, timestamp) to JSON when done  
 
+---
+
+# Day 8 - Voice Game Master (D&D-Style Adventure)
+
+For Day 8, I built a D&D-style Voice Game Master that runs an interactive adventure in a single fantasy universe.
+
+- GM persona defined via system prompt (universe, tone, and rules)
+- Describes scenes and always ends with a prompt for player action (“What do you do?”)
+- Uses voice input for player responses and continues the story dynamically
+- Maintains continuity using chat history (player decisions, characters, locations)
+- Each session runs for multiple turns and reaches a small story arc (e.g., escaping danger or finding an item)
+
 
 Powered by the fastest Text-to-Speech API — **Murf Falcon** — providing smooth, natural voice interactions.
 
