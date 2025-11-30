@@ -90,6 +90,42 @@ For Day 8, I built a D&D-style Voice Game Master that runs an interactive advent
 - Maintains continuity using chat history (player decisions, characters, locations)
 - Each session runs for multiple turns and reaches a small story arc (e.g., escaping danger or finding an item)
 
+---
+
+# Day 9 - Voice Shopping Assistant
+
+For Day 9, I built a voice-based shopping assistant with a small product catalog and a simple Python “merchant layer”.
+
+### Features
+
+- Voice-based catalog exploration  
+  - Supports queries like:
+    - “Show me some pants”
+    - “Any t-shirts under 1000?”
+    - “I’m looking for a black hoodie”
+  - Uses Python functions to filter and return matching products
+  - Summarizes key results with name and price
+
+- Ordering flow
+  - User can say things like:
+    - “I’ll buy the second hoodie you mentioned, in size M”
+  - Agent resolves which product is referenced
+  - Creates an order object via Python
+  - Confirms the order details back to the user
+
+- Order persistence
+  - Stores orders in a simple backend (in-memory list or `orders.json`)
+  - Each order includes:
+    - Order ID
+    - Product ID(s)
+    - Quantity
+    - Price and currency
+    - Timestamp
+
+- Last order summary
+  - User can ask:
+    - “What did I just buy?”
+  - Agent reads back the most recent order from the backend
 
 Powered by the fastest Text-to-Speech API — **Murf Falcon** — providing smooth, natural voice interactions.
 

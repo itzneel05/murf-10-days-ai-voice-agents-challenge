@@ -1,0 +1,163 @@
+[
+  {
+    "id": "tee-101",
+    "name": "Graphic T-Shirt",
+    "description": "Soft cotton tee with minimal print",
+    "price": 999,
+    "currency": "INR",
+    "category": "tshirt",
+    "color": "black",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "id": "tee-102",
+    "name": "Plain T-Shirt",
+    "description": "Everyday comfort crew neck",
+    "price": 749,
+    "currency": "INR",
+    "category": "tshirt",
+    "color": "white",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "tee-103",
+    "name": "Oversized T-Shirt",
+    "description": "Relaxed fit cotton tee",
+    "price": 1199,
+    "currency": "INR",
+    "category": "tshirt",
+    "color": "blue",
+    "sizes": ["M", "L", "XL"]
+  },
+  {
+    "id": "tee-104",
+    "name": "Sports T-Shirt",
+    "description": "Moisture-wicking fabric for training",
+    "price": 1299,
+    "currency": "INR",
+    "category": "tshirt",
+    "color": "gray",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "hood-201",
+    "name": "Black Zip Hoodie",
+    "description": "Warm fleece zip hoodie",
+    "price": 1899,
+    "currency": "INR",
+    "category": "hoodie",
+    "color": "black",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "id": "hood-202",
+    "name": "Blue Pullover Hoodie",
+    "description": "Cozy pullover style",
+    "price": 1699,
+    "currency": "INR",
+    "category": "hoodie",
+    "color": "blue",
+    "sizes": ["M", "L"]
+  },
+  {
+    "id": "hood-203",
+    "name": "Cropped Hoodie",
+    "description": "Lightweight cropped fit",
+    "price": 1499,
+    "currency": "INR",
+    "category": "hoodie",
+    "color": "white",
+    "sizes": ["S", "M"]
+  },
+  {
+    "id": "hood-204",
+    "name": "Heavyweight Hoodie",
+    "description": "Thick fleece, winter-ready",
+    "price": 2199,
+    "currency": "INR",
+    "category": "hoodie",
+    "color": "gray",
+    "sizes": ["L", "XL"]
+  },
+  {
+    "id": "shirt-301",
+    "name": "Oxford Shirt",
+    "description": "Classic button-down oxford",
+    "price": 1999,
+    "currency": "INR",
+    "category": "shirt",
+    "color": "white",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "shirt-302",
+    "name": "Linen Shirt",
+    "description": "Breathable linen for summer",
+    "price": 2299,
+    "currency": "INR",
+    "category": "shirt",
+    "color": "blue",
+    "sizes": ["M", "L", "XL"]
+  },
+  {
+    "id": "shirt-303",
+    "name": "Flannel Shirt",
+    "description": "Soft brushed flannel",
+    "price": 1799,
+    "currency": "INR",
+    "category": "shirt",
+    "color": "red",
+    "sizes": ["S", "M", "L", "XL"]
+  },
+  {
+    "id": "shirt-304",
+    "name": "Denim Shirt",
+    "description": "Washed denim, casual",
+    "price": 1899,
+    "currency": "INR",
+    "category": "shirt",
+    "color": "blue",
+    "sizes": ["M", "L"]
+  },
+  
+  {
+    "id": "pant-401",
+    "name": "Slim Fit Jeans",
+    "description": "Stretch denim",
+    "price": 2499,
+    "currency": "INR",
+    "category": "pants",
+    "color": "blue",
+    "sizes": ["30", "32", "34", "36"]
+  },
+  {
+    "id": "pant-402",
+    "name": "Chino Pants",
+    "description": "Smart casual chinos",
+    "price": 1999,
+    "currency": "INR",
+    "category": "pants",
+    "color": "khaki",
+    "sizes": ["30", "32", "34"]
+  },
+  {
+    "id": "pant-403",
+    "name": "Jogger Pants",
+    "description": "Comfort knit joggers",
+    "price": 1499,
+    "currency": "INR",
+    "category": "pants",
+    "color": "black",
+    "sizes": ["S", "M", "L"]
+  },
+  {
+    "id": "pant-404",
+    "name": "Wide Leg Trousers",
+    "description": "Draped tailored fit",
+    "price": 2199,
+    "currency": "INR",
+    "category": "pants",
+    "color": "gray",
+    "sizes": ["S", "M", "L"]
+  }
+]
