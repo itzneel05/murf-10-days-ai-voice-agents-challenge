@@ -127,6 +127,21 @@ For Day 9, I built a voice-based shopping assistant with a small product catalog
     - “What did I just buy?”
   - Agent reads back the most recent order from the backend
 
-Powered by the fastest Text-to-Speech API — **Murf Falcon** — providing smooth, natural voice interactions.
+---
 
-Excited for the upcoming days as I continue building and refining more intelligent and responsive voice agents with Murf AI's advanced ecosystem!
+# Day 10 - Voice Improv Battle
+
+Built a single-player voice-first improv game show.
+
+### Features
+
+- AI host persona with high-energy, witty style  
+- Runs 3-5 rounds of improv scenarios  
+- Scenarios include rich, humorous prompts (e.g., barista with a portal latte, time-traveling guide)  
+- Host reacts realistically to player improvisation — mixing praise, critique, and teasing  
+- Tracks game state: player name, current round, rounds detail, phase  
+- Supports graceful early exit and closing summary highlighting player style  
+- Uses a voice connection via LiveKit to stream voice interactions  
+
+
+Powered by the fastest Text-to-Speech API — **Murf Falcon** — providing smooth, natural voice interactions.
